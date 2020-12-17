@@ -5,3 +5,6 @@ description: >
 
 display:
   source_url: "https://www.github.com/BishopFox/guardian-ci"
+
+orbs:
+  jq: circleci/jq@2.2.0

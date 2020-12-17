@@ -1,0 +1,33 @@
+docker:
+  - image: hashicorp/terraform:0.12.29
+working_directory: ~/repo/tf
+parameters:
+  workspace:
+    description: "Workspace to run Terraform plan against"
+    default: "dev"
+    type: string
+  use_version_sha:
+    description: "Use a version sha"
+    default: false
+    type: boolean
+  validate:
+    description: "Run terraform validate"
+    default: false
+    type: boolean
+steps:
+  - checkout:
+      path: ~/repo
+  - attach_workspace:
+      at: ~/repo
+  - run: apk add curl go jq make bash
+  - run: echo $TERRAFORM_TOKEN_HCL > ~/.terraformrc
+  - run:
+      command: |
+        VERSION=$(cat ../VERSION)
+        echo "app-version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" > version.auto.tfvars
+  - run:
+      command: |
+        export TF_WORKSPACE=<< parameters.workspace >>
+        terraform init
+        <<# parameters.validate >>terraform validate<</ parameters.validate >>
+        terraform plan

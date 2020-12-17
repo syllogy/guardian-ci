@@ -1,0 +1,35 @@
+docker:
+  - image: hashicorp/terraform:0.12.29
+working_directory: ~/repo/tf
+shell: /bin/bash -eo pipefail
+parameters:
+  workspace:
+    description: "Workspace to run Terraform apply against"
+    default: "dev"
+    type: string
+  use_version_sha:
+    description: "Use a version sha"
+    default: false
+    type: boolean
+steps:
+  - checkout:
+      path: ~/repo
+  - attach_workspace:
+      at: ~/repo
+  - run:
+      name: Install dependencies
+      shell: /bin/sh -eo pipefail
+      command: |
+        apk add curl bash make
+  - run: echo $TERRAFORM_TOKEN_HCL > ~/.terraformrc
+  - jq/install
+  - run: cp $(which jq) ~/repo/tf
+  - run:
+      command: |
+        VERSION=$(cat ~/repo/VERSION)
+        echo "app-version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" > version.auto.tfvars
+  - run:
+      command: |
+        export TF_WORKSPACE=<< parameters.workspace >>
+        terraform init
+        terraform apply -auto-approve
