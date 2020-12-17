@@ -1,0 +1,21 @@
+executor: default
+
+steps:
+  - run:
+      name: Check if this is a draft PR
+      command: |
+        pr_number=$(echo $CIRCLE_PULL_REQUEST | cut -d / -f 7)
+        draft_pr_status_url="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$pr_number?access_token=$GITHUB_TOKEN"
+        not_draft_pr=$(curl -H "Accept: application/vnd.github.shadow-cat-preview+json" "$draft_pr_status_url" | jq '.draft == false')
+        if ${not_draft_pr}; then
+          echo "Not a draft PR, running pipeline..."
+        else
+          exit 1
+        fi
+  - checkout
+  - run:
+      name: Ensure version number is changed
+      command: if git diff --exit-code origin/master VERSION; then echo "VERSION - matches origin/master, needs bumped" 1>&2; false; fi
+  - run:
+      name: Ensure changelog matches the version number
+      command: awk -v "version=$(cat VERSION)" 'NR == 1 && $0 !~ version {print "CHANGELOG.md - version does not match VERSION" | "cat 1>&2"; err=1} END {exit err}' CHANGELOG.md
