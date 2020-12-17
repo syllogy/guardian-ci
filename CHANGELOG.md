@@ -1,4 +1,8 @@
 # Changelog
+## 0.2.0
+### Added
+- deny unreleased versions job
+
 ## 0.1.1
 ### Fixed
  - circle workflow
