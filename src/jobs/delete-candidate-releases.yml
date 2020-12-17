@@ -1,0 +1,25 @@
+executor: default
+
+working_directory: ~/repo
+
+steps:
+  - add_ssh_keys:
+      fingerprints:
+        - $SSH_FINGERPRINT
+  - checkout
+  - run:
+      name: Delete candidate github images
+      shell: /bin/bash -e
+      command: |
+        git tag | sort -V | sed "/v$(cat ./VERSION)/,\$d" | grep -E 'v.+-+' | xargs -n1 -I {} bash -c "curl https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/tags/{}?access_token=$GITHUB_TOKEN | jq .id" | grep -v null |  xargs -n1 -I {} curl -X DELETE https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/{}?access_token=$GITHUB_TOKEN
+  - run:
+      shell: /bin/bash -e
+      command: |
+        git tag | sort -V | sed "/v$(cat ./VERSION)/,\$d" | grep -E 'v.+-+' | xargs -n1 -I {} git push --delete origin {}
+  - run:
+      shell: /bin/bash -e
+      name: Delete candidate docker releases
+      command: |
+        JWT_TOKEN=$(curl -XPOST https://hub.docker.com/v2/users/login -d username=$DOCKER_USER -d password=$DOCKER_PASS | jq -r .token)
+        git tag | sort -V | sed "/v$(cat ./VERSION)/,\$d" | grep -E 'v.+-+' | cut -c2- | xargs -n1 -I {} curl -XDELETE https://hub.docker.com/v2/repositories/bishopfox/$CIRCLE_PROJECT_REPONAME/tags/{}/ -H "Authorization: JWT $JWT_TOKEN"
+        git tag | sort -V | sed "/v$(cat ./VERSION)/,\$d" | grep -E 'v.+-+' | cut -c2- | xargs -n1 -I {} curl -XDELETE https://hub.docker.com/v2/repositories/bishopfox/$CIRCLE_PROJECT_REPONAME/tags/migrate-{}/ -H "Authorization:JWT $JWT_TOKEN"

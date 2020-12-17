@@ -8,3 +8,4 @@ display:
 
 orbs:
   jq: circleci/jq@2.2.0
+  golang: cci-orb/golang@0.1.15

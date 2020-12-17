@@ -1,0 +1,32 @@
+executor: default
+
+parameters:
+  workflow:
+    default: "CI"
+    type: string
+  deploy:
+    default: false
+    type: boolean
+
+steps:
+  - go-get:
+      repo: "github.com/BishopFox/external-notifications"
+  - run:
+      command: |
+        <<^ parameters.deploy >>message="# CI Announcement<br><</ parameters.deploy >>
+        <<# parameters.deploy >>message="# Deployment Announcement<br><</ parameters.deploy >>
+
+        Service: **$CIRCLE_PROJECT_REPONAME**<br>
+        Environment: **<< parameters.workflow >>**<br>
+        Commit: $CIRCLE_SHA1<br>
+
+        <<^ parameters.deploy >>Branch: **$CIRCLE_BRANCH**<br><br><</ parameters.deploy >>
+        <<# parameters.deploy >>Branch: **$CIRCLE_TAG**<br><br><</ parameters.deploy >>
+
+        <<^ parameters.deploy >>Triggerd by: **$CIRCLE_USERNAME**<br><br><</ parameters.deploy >>
+
+        <<^ parameters.deploy >>Running CI pipeline...<br><br><</ parameters.deploy >>
+
+        Link to [Circle Pipeline URL](https://app.circleci.com/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pipelines)<br/>
+        Link to [GitHub PR URL]($CIRCLE_PULL_REQUEST)"
+        external-notifications info deploy-announcements $message

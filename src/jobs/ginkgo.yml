@@ -1,0 +1,38 @@
+description: >
+  Run ginkgo tests
+
+executor: default
+
+working_directory: ~/repo
+
+parameters:
+  package:
+    type: string
+    description: "The package to run ginkgo against"
+    default: ""
+  skip:
+    type: string
+    description: "a comma separated list of packages to skip"
+    default: ""
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: ~/repo
+  - golang/gomod-download
+  - run:
+      name: ensure ginkgo is present
+      command: |
+        if ! command -v COMMAND &> /dev/null; then
+          go get github.com/onsi/ginkgo/ginkgo
+        fi
+  - when:
+      condition: <<parameters.skip>>
+      steps:
+        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --skipPackage <<parameters.skip>>
+  - unless:
+      condition: <<parameters.skip>>
+      steps:
+        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending <<parameters.package>>
+  - store_test_results:
+      path: test-results

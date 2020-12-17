@@ -1,0 +1,31 @@
+executor: default
+
+working_directory: ~/repo
+
+parameters:
+  candidate:
+    description: "publish candidate image"
+    default: true
+    type: boolean
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: ~/repo
+  - setup_remote_docker
+  - run:
+      name: Build and publish docker container
+      command: |
+        echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+        make version<<# parameters.candidate >>-candidate<</ parameters.candidate >>
+  - run:
+      name: Install release dependencies
+      command: |
+        go get github.com/mitchellh/gox
+        go get github.com/tcnksm/ghr
+  - run:
+      name: Create github release
+      command: |
+        make release<<# parameters.candidate >>-candidate<</ parameters.candidate >>
+  - store_artifacts:
+      path: ~/repo/dist
