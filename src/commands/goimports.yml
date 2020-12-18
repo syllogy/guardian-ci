@@ -1,0 +1,17 @@
+description: >
+  Validate goimports
+
+steps:
+  - run:
+      name: ensure goimports is present
+      command: |
+        if ! command -v goimports &> /dev/null; then
+          go get -u golang.org/x/tools/cmd/goimports
+        fi
+  - run:
+      name: validate goimports
+      command: |
+        if [[ "$(goimports -local 'github.com/BishopFox' -l . | tee /dev/stderr)" ]];  then
+          echo "Fix formatting issues with 'goimports .'"
+          exit 1
+        fi

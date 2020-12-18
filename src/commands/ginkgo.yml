@@ -1,0 +1,28 @@
+description: >
+  Run ginkgo
+
+parameters:
+  package:
+    type: string
+    description: "The package to run ginkgo against"
+    default: ""
+  skip:
+    type: string
+    description: "a comma separated list of packages to skip"
+    default: ""
+
+steps:
+  - run:
+      name: ensure ginkgo is present
+      command: |
+        if ! command -v ginkgo &> /dev/null; then
+          go get github.com/onsi/ginkgo/ginkgo
+        fi
+  - when:
+      condition: <<parameters.skip>>
+      steps:
+        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --skipPackage <<parameters.skip>>
+  - unless:
+      condition: <<parameters.skip>>
+      steps:
+        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending <<parameters.package>>

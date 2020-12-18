@@ -14,25 +14,22 @@ parameters:
     type: string
     description: "a comma separated list of packages to skip"
     default: ""
+  goimports:
+    type: boolean
+    description: "run goimports validation"
+    default: true
 
 steps:
   - checkout
   - attach_workspace:
       at: ~/repo
   - golang/gomod-download
-  - run:
-      name: ensure ginkgo is present
-      command: |
-        if ! command -v COMMAND &> /dev/null; then
-          go get github.com/onsi/ginkgo/ginkgo
-        fi
   - when:
-      condition: <<parameters.skip>>
+      condition: <<parameters.goimports>>
       steps:
-        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --skipPackage <<parameters.skip>>
-  - unless:
-      condition: <<parameters.skip>>
-      steps:
-        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending <<parameters.package>>
+        - goimports
+  - ginkgo:
+      package: <<parameters.package>>
+      skip: <<parameters.skip>>
   - store_test_results:
       path: test-results

@@ -1,3 +1,9 @@
+## 0.1.3
+### Added
+- goimports command
+### Fixed
+- deny-unreleased-versions check
+
 ## 0.1.2
 ### Added
 - delete-candidate-releases
