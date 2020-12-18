@@ -1,3 +1,7 @@
+description: >
+  Publish a docker and github release for the repo
+  In most Dockerfiles, this assumes a binary is built and in the dist directory
+
 executor: default
 
 working_directory: ~/repo
@@ -7,6 +11,9 @@ parameters:
     description: "publish candidate image"
     default: true
     type: boolean
+  release_name:
+    description: "the name to be used for the docker and github releases"
+    type: string
 
 steps:
   - checkout
@@ -14,18 +21,41 @@ steps:
       at: ~/repo
   - setup_remote_docker
   - run:
-      name: Build and publish docker container
-      command: |
-        echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-        make version<<# parameters.candidate >>-candidate<</ parameters.candidate >>
+      name: Publish to Docker
+      environment:
+        CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
+        RELEASE_NAME: << parameters.release_name >>
+      command: <<include(scripts/publish-docker.sh)>>
   - run:
       name: Install release dependencies
       command: |
         go get github.com/mitchellh/gox
         go get github.com/tcnksm/ghr
-  - run:
-      name: Create github release
-      command: |
-        make release<<# parameters.candidate >>-candidate<</ parameters.candidate >>
+  - when:
+      condition: <<parameters.candidate>>
+      steps:
+        - run:
+            name: Create candidate github release
+            command: |
+              VERSION=$(cat VERSION)
+              ghr -t $GITHUB_TOKEN \
+                -u BishopFox \
+                -r << parameters.release_name >> \
+                -c $CIRCLE_SHA1 \
+                --replace "v$VERSION-$CIRCLE_SHA1" \
+                ./dist
+  - unless:
+      condition: <<parameters.candidate>>
+      steps:
+        - run:
+            name: Create github release
+            command: |
+              VERSION=$(cat VERSION)
+              ghr -t $GITHUB_TOKEN \
+                -u BishopFox \
+                -r << parameters.release_name >> \
+                -c $CIRCLE_SHA1 \
+                --delete "v$VERSION" \
+                ./dist
   - store_artifacts:
       path: ~/repo/dist

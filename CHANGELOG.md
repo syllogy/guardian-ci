@@ -1,3 +1,7 @@
+## 0.1.4
+### Changed
+- publish no longer uses make targets
+
 ## 0.1.3
 ### Added
 - goimports command

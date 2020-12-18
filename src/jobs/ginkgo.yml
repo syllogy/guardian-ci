@@ -1,5 +1,5 @@
 description: >
-  Run ginkgo tests
+  Run ginkgo tests and goimports validation unless goimports param is set to false
 
 executor: default
 
