@@ -1,3 +1,9 @@
+## 0.1.5
+### Added
+- copy changelog before creating release
+### Fixed
+- migrate docker tag name
+
 ## 0.1.4
 ### Changed
 - publish no longer uses make targets

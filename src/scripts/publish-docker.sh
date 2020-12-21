@@ -44,5 +44,5 @@ push_version "$CONTAINER:$DOCKER_TAG"
 push_latest
 
 if [[ -f migrations/Dockerfile ]]; then
-  push_migration "$CONTAINER:migrate:$DOCKER_TAG"
+  push_migration "$CONTAINER:migrate-$DOCKER_TAG"
 fi

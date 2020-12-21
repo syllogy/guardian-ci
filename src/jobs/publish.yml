@@ -21,6 +21,12 @@ steps:
       at: ~/repo
   - setup_remote_docker
   - run:
+      name: Copy Changelog
+      command: |
+        if [[ -f CHANGELOG.md ]]; then
+          cp CHANGELOG.md dist/CHANGELOG.md
+        fi
+  - run:
       name: Publish to Docker
       environment:
         CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
