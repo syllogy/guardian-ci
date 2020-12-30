@@ -24,6 +24,10 @@ parameters:
     type: boolean
     description: "start postgres docker container (requires a docker-compose.yml with postgres configuration)"
     default: false
+  postgres_db:
+    type: string
+    description: "the name of the database to be used for component tests"
+    default: component
 
 steps:
   - checkout
@@ -41,6 +45,8 @@ steps:
       steps:
         - run:
             name: Start Postgres and apply migrations
+            environment:
+              POSTGRES_DB: <<parameters.postgres_db>>
             command: <<include(scripts/start-postgres.sh)>>
   - ginkgo:
       package: <<parameters.package>>
