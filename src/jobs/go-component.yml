@@ -1,0 +1,49 @@
+description: >
+  Run ginkgo component tests and optional start rabbit or postgres from a docker-compose.yml
+  An example docker-compose file is in jobs/README.md
+
+machine:
+  image: ubuntu-2004:202010-01
+
+working_directory: ~/repo
+
+parameters:
+  package:
+    type: string
+    description: "The package to run ginkgo against"
+    default: "component"
+  skip:
+    type: string
+    description: "a comma separated list of packages to skip"
+    default: ""
+  rabbit:
+    type: boolean
+    description: "start rabbitmq docker container (requires a docker-compose.yml with rabbit configuration)"
+    default: false
+  postgres:
+    type: boolean
+    description: "start postgres docker container (requires a docker-compose.yml with postgres configuration)"
+    default: false
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: ~/repo
+  - golang/gomod-download
+  - when:
+      condition: <<parameters.rabbit>>
+      steps:
+        - run:
+            name: Start Rabbit
+            command: <<include(scripts/start-rabbit.sh)>>
+  - when:
+      condition: <<parameters.postgres>>
+      steps:
+        - run:
+            name: Start Postgres and apply migrations
+            command: <<include(scripts/start-postgres.sh)>>
+  - ginkgo:
+      package: <<parameters.package>>
+      skip: <<parameters.skip>>
+  - store_test_results:
+      path: test-results

@@ -1,5 +1,9 @@
 ## 0.1.5
 ### Added
+- go-component job
+
+## 0.1.5
+### Added
 - copy changelog before creating release
 ### Fixed
 - migrate docker tag name
