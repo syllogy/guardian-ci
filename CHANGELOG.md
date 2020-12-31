@@ -1,3 +1,7 @@
+## 0.1.8
+### Fixed
+- logical error in deny unreleased versions
+
 ## 0.1.7
 ### Added
 - go-component job
