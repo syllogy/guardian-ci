@@ -1,0 +1,5 @@
+docker:
+    - image: cimg/node
+      auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS

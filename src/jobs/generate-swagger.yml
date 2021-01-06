@@ -1,7 +1,7 @@
 description: >
     Generate a swagger (OpenAPI v2) spec from golang sources.
 
-executor: default
+executor: node
 
 working_directory: ~/repo
 
