@@ -1,0 +1,43 @@
+description: >
+    Generate a swagger (OpenAPI v2) spec from golang sources.
+
+executor: default
+
+working_directory: ~/repo
+
+parameters:
+    go-swagger-version:
+        description: "the version of go-swagger to install"
+        default: "0.25.0"
+        type: string
+    output:
+        description: "the path to the final swagger file"
+        default: "dist/swagger.yml"
+        type: string
+
+steps:
+    - checkout
+    - attach_workspace:
+          at: ~/repo
+    - run:
+          name: Set API version
+          command: |
+              VERSION=$(cat VERSION)
+              sed -Ee "s@version: VERSION@version: $(VERSION)@" swagger-base.yml > /tmp/swagger-base.yml
+    - run:
+          # Pulled from https://goswagger.io/install.html#static-binary
+          name: Install go-swagger
+          command: |
+              api_url="https://api.github.com/repos/go-swagger/go-swagger/releases/tags/v<< parameters.go-swagger-version>>"
+              download_url=$(curl -s  "${api_url}" | \
+              jq -r '.assets[] | select(.name | contains("'"$(uname | tr '[:upper:]' '[:lower:]')"'_amd64")) | .browser_download_url')
+              sudo curl -o /usr/local/bin/swagger -L'#' "$download_url"
+              sudo chmod +x /usr/local/bin/swagger
+    - run:
+          name: Generate swagger
+          command: |
+              mkdir -p $(dirname "<<parameters.output>>")
+              SWAGGER_GENERATE_EXTENSION=false swagger generate spec -m -i /tmp/swagger-base.yml -o <<parameters.output>>
+              swagger flatten --format=yaml --with-flatten=remove-unused -o <<parameters.output>> <<parameters.output>>
+    - store_artifacts:
+          path: <<parameters.output>>

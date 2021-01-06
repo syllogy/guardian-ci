@@ -1,0 +1,23 @@
+description: >
+    Validate a swagger (OpenAPI v2) spec file
+
+executor: default
+
+working_directory: ~/repo
+
+parameters:
+    path:
+        description: "the path to the swagger file"
+        default: "dist/swagger.yml"
+        type: string
+
+steps:
+    - checkout
+    - attach_workspace:
+          at: ~/repo
+    - run:
+          name: Install swagger-cli
+          command: sudo npm install -g swagger-cli
+    - run:
+          name: validate swagger
+          command: npx swagger-cli validate <<parameters.path>>
