@@ -22,8 +22,7 @@ steps:
     - run:
           name: Set API version
           command: |
-              VERSION=$(cat VERSION)
-              sed -Ee "s@version: VERSION@version: $(VERSION)@" swagger-base.yml > /tmp/swagger-base.yml
+              sed -Ee "s@version: VERSION@version: $(cat VERSION)@" swagger-base.yml > /tmp/swagger-base.yml
     - run:
           # Pulled from https://goswagger.io/install.html#static-binary
           name: Install go-swagger
