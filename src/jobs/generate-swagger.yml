@@ -39,5 +39,7 @@ steps:
               mkdir -p $(dirname "<<parameters.output>>")
               SWAGGER_GENERATE_EXTENSION=false swagger generate spec -m -i /tmp/swagger-base.yml -o <<parameters.output>>
               swagger flatten --format=yaml --with-flatten=remove-unused -o <<parameters.output>> <<parameters.output>>
-    - store_artifacts:
-          path: <<parameters.output>>
+    - persist_to_workspace:
+          root: .
+          paths:
+              - <<parameters.output>>
