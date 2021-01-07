@@ -14,24 +14,31 @@ parameters:
   release_name:
     description: "the name to be used for the docker and github releases"
     type: string
+  docker:
+    description: "whether or not to publish docker containers"
+    default: true
+    type: boolean
 
 steps:
   - checkout
   - attach_workspace:
       at: ~/repo
-  - setup_remote_docker
   - run:
       name: Copy Changelog
       command: |
         if [[ -f CHANGELOG.md ]]; then
           cp CHANGELOG.md dist/CHANGELOG.md
         fi
-  - run:
-      name: Publish to Docker
-      environment:
-        CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
-        RELEASE_NAME: << parameters.release_name >>
-      command: <<include(scripts/publish-docker.sh)>>
+  - when:
+      condition: <<parameters.docker>>
+      steps:
+        - setup_remote_docker
+        - run:
+            name: Publish to Docker
+            environment:
+              CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
+              RELEASE_NAME: << parameters.release_name >>
+            command: <<include(scripts/publish-docker.sh)>>
   - run:
       name: Install release dependencies
       command: |
