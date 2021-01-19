@@ -1,3 +1,7 @@
+## 0.2.2
+### Changed
+- create dist if doesn't exist
+
 ## 0.1.8
 ### Fixed
 - logical error in deny unreleased versions

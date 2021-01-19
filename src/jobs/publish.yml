@@ -26,6 +26,10 @@ steps:
   - run:
       name: Copy Changelog
       command: |
+        if [[ ! -d dist ]]; then
+          mkdir dist
+        fi
+
         if [[ -f CHANGELOG.md ]]; then
           cp CHANGELOG.md dist/CHANGELOG.md
         fi
