@@ -1,7 +1,6 @@
-docker:
-  - image: hashicorp/terraform:0.12.29
 working_directory: ~/repo/tf
 shell: /bin/bash -eo pipefail
+
 parameters:
   workspace:
     description: "Workspace to run Terraform apply against"
@@ -11,6 +10,14 @@ parameters:
     description: "Use a version sha"
     default: false
     type: boolean
+  tf_version:
+    description: "the version of terraform to use"
+    default: "0.12.29"
+    type: string
+
+docker:
+  - image: hashicorp/terraform:<< parameters.tf_version >>
+
 steps:
   - checkout:
       path: ~/repo

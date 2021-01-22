@@ -1,3 +1,7 @@
+## 0.2.3
+### Changed
+- allow specifying terraform version
+
 ## 0.2.2
 ### Changed
 - create dist if doesn't exist
