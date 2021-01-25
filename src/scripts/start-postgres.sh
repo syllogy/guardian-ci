@@ -9,9 +9,6 @@ until docker-compose exec postgres pg_isready; do
   sleep 1
 done
 
-docker-compose up -d migrate
-
-# wait for migrations
-docker-compose logs -f migrate
+docker-compose run migrate
 
 echo "export POSTGRES_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$POSTGRES_PORT/$POSTGRES_DB?sslmode=disable" >> "$BASH_ENV"
