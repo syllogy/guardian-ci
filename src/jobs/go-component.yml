@@ -38,7 +38,7 @@ steps:
   - attach_workspace:
       at: ~/repo
   - golang/install:
-    version: <<parameters.go_version>>
+      version: <<parameters.go_version>>
   - golang/gomod-download
   - run:
       name: Set up docker
