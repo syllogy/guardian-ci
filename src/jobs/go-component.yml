@@ -28,12 +28,22 @@ parameters:
     type: string
     description: "the name of the database to be used for component tests"
     default: component
+  go_version:
+    type: string
+    description: "the version of golang to install"
+    default: "1.15.6"
 
 steps:
   - checkout
   - attach_workspace:
       at: ~/repo
+  - golang/install:
+      version: <<parameters.go_version>>
   - golang/gomod-download
+  - run:
+      name: Set up docker
+      command: |
+        echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
   - when:
       condition: <<parameters.rabbit>>
       steps:
