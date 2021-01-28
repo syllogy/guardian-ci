@@ -1,3 +1,7 @@
+## 0.2.4
+### Added
+- vet tf job
+
 ## 0.2.3
 ### Changed
 - allow specifying terraform version

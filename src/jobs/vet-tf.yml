@@ -1,0 +1,29 @@
+working_directory: ~/repo/tf
+shell: /bin/bash -eo pipefail
+
+parameters:
+  tf_version:
+    description: "the version of terraform to use"
+    default: "0.12.29"
+    type: string
+
+docker:
+  - image: hashicorp/terraform:<< parameters.tf_version >>
+
+steps:
+  - checkout:
+      path: ~/repo
+  - attach_workspace:
+      at: ~/repo
+  - run:
+      name: Install dependencies
+      shell: /bin/sh -eo pipefail
+      command: |
+        apk add curl bash
+
+  - git-clone:
+      repo: "git@github.com:BishopFox/terraform-modules"
+
+  - run:
+      name: vet terraform
+      command: <<include(scripts/vet-tf.sh)>>
