@@ -1,3 +1,7 @@
+## 0.2.5
+### Fixed
+- vet tf job to work when modules aren't in use
+
 ## 0.2.4
 ### Added
 - vet tf job
