@@ -1,6 +1,6 @@
 ## 0.2.7
 ### Fixed
-- Error message provided by `goimports` when it fails to be accurate
+- Error message provided by `goimports` when it fails to be accurate 
 
 ## 0.2.6
 ### Changed
