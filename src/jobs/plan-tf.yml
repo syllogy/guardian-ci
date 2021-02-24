@@ -31,6 +31,7 @@ steps:
       command: |
         VERSION=$(cat ../VERSION)
         echo "app-version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" > version.auto.tfvars
+        echo "app_version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" >> version.auto.tfvars
   - run:
       command: |
         export TF_WORKSPACE=<< parameters.workspace >>
