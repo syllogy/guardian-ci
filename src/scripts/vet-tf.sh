@@ -2,7 +2,7 @@ terraform fmt --check . || (echo "Terraform is not formatted correctly. Please r
 
 latest_module_version="v$(cat ~/terraform-modules/VERSION)"
 
-tf_versions=$(grep -E 'source = .*bishopfox.*v[0-9\.]*' ./*.tf | grep -oE 'v[0-9\.]+')
+tf_versions=$(grep -E 'source\s+=\s+.*bishopfox.*v[0-9\.]*' ./*.tf | grep -oE 'v[0-9\.]+')
 
 if [[ -n $tf_versions ]]; then
   echo "$tf_versions" | while read -r version; do
