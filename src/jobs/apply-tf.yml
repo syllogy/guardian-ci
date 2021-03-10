@@ -2,9 +2,11 @@ working_directory: ~/repo/tf
 shell: /bin/bash -eo pipefail
 
 parameters:
-  workspace:
-    description: "Workspace to run Terraform apply against"
-    default: "dev"
+  environment:
+    description: "Terraform environment name"
+    type: string
+  service:
+    description: "The name of the service being deployed"
     type: string
   use_version_sha:
     description: "Use a version sha"
@@ -12,32 +14,30 @@ parameters:
     type: boolean
   tf_version:
     description: "the version of terraform to use"
-    default: "0.12.29"
+    default: "0.14.7"
     type: string
 
-docker:
-  - image: hashicorp/terraform:<< parameters.tf_version >>
+executor: aws-cli/default
 
 steps:
   - checkout:
       path: ~/repo
-  - attach_workspace:
-      at: ~/repo
+  - terraform/install:
+      terraform_version: <<parameters.tf_version>>
+  - aws-cli/install
+  - aws-cli/setup:
+      profile-name: terraform
   - run:
-      name: Install dependencies
-      shell: /bin/sh -eo pipefail
-      command: |
-        apk add curl bash make
-  - run: echo $TERRAFORM_TOKEN_HCL > ~/.terraformrc
-  - jq/install
-  - run: cp $(which jq) ~/repo/tf
+      name: Initialize terraform
+      environment:
+        ENV_NAME: <<parameters.environment>>
+        AWS_PROFILE: terraform
+      command: <<include(scripts/init-tf.sh)>>
   - run:
-      command: |
-        VERSION=$(cat ~/repo/VERSION)
-        echo "app-version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" > version.auto.tfvars
-        echo "app_version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" >> version.auto.tfvars
-  - run:
-      command: |
-        export TF_WORKSPACE=<< parameters.workspace >>
-        terraform init
-        terraform apply -auto-approve
+      name: Apply terraform
+      environment:
+        ENV_NAME: <<parameters.environment>>
+        SERVICE: <<parameters.service>>
+        AWS_PROFILE: terraform
+        USE_VERSION_SHA: <<# parameters.use_version_sha >>1<</ parameters.use_version_sha >>
+      command: <<include(scripts/apply-tf.sh)>>
