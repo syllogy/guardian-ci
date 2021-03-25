@@ -40,7 +40,7 @@ steps:
       command: |
         VERSION=$(cat ../VERSION)
         echo "app_version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" >> version.auto.tfvars
-        aws ssm get-parameter --name "/cast/${ENV_NAME}/vars/${SERVICE}" --query 'Parameter.Value' --output text > vars.auto.tfvars
+        aws ssm get-parameter --name "/cast/<<parameters.environment>>/vars/<<parameters.service>>" --query 'Parameter.Value' --output text > vars.auto.tfvars
   - run:
       command: |
         <<# parameters.validate >>terraform validate<</ parameters.validate >>
