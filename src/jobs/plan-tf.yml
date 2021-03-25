@@ -36,12 +36,11 @@ steps:
         AWS_PROFILE: terraform
       command: <<include(scripts/init-tf.sh)>>
   - run:
-      name: set terraform variables
-      command: |
-        VERSION=$(cat ../VERSION)
-        echo "app_version = \"$VERSION<<# parameters.use_version_sha >>-$CIRCLE_SHA1<</ parameters.use_version_sha >>\"" >> version.auto.tfvars
-        aws ssm get-parameter --name "/cast/${ENV_NAME}/vars/${SERVICE}" --query 'Parameter.Value' --output text > vars.auto.tfvars
-  - run:
-      command: |
-        <<# parameters.validate >>terraform validate<</ parameters.validate >>
-        terraform plan
+      name: Plan terraform
+      environment:
+        ENV_NAME: <<parameters.environment>>
+        SERVICE: <<parameters.service>>
+        AWS_PROFILE: terraform
+        USE_VERSION_SHA: <<# parameters.use_version_sha >>1<</ parameters.use_version_sha >>
+        SHOULD_VALIDATE: <<parameters.validate>>
+      command: <<include(scripts/plan-tf.sh)>>
