@@ -5,7 +5,7 @@ set -eu
 PAT='*\.(md|tf|svg|png)$|VERSION'
 
 set +o pipefail
-CHANGES=$(git diff --name-only HEAD~1 | grep -vE "$PAT" | wc -l)
+CHANGES=$(git diff --name-only HEAD~1 | grep -cvE "$PAT")
 set -o pipefail
 
 if [ "$CHANGES" = "0" ]; then
