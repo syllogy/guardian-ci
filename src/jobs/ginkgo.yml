@@ -28,8 +28,9 @@ steps:
       condition: <<parameters.goimports>>
       steps:
         - goimports
-  - ginkgo:
-      package: <<parameters.package>>
-      skip: <<parameters.skip>>
-  - store_test_results:
-      path: test-results
+  - run:
+      name: Unit test
+      environment:
+        SKIP: <<parameters.skip>>
+        PACKAGE: <<parameters.package>>
+      command: <<include(scripts/ginkgo.sh)>>

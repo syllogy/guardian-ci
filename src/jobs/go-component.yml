@@ -37,29 +37,26 @@ steps:
   - checkout
   - attach_workspace:
       at: ~/repo
+  - run:
+      name: Check if testing is necessary
+      command: <<include(scripts/maybe-skip-testing.sh)>>
   - golang/install:
       version: <<parameters.go_version>>
   - golang/gomod-download
   - run:
+      name: ensure ginkgo is present
+      command: |
+        if ! command -v ginkgo &> /dev/null; then
+          go get github.com/onsi/ginkgo/ginkgo
+        fi
+  - run:
       name: Set up docker
       command: |
         echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
-  - when:
-      condition: <<parameters.rabbit>>
-      steps:
-        - run:
-            name: Start Rabbit
-            command: <<include(scripts/start-rabbit.sh)>>
-  - when:
-      condition: <<parameters.postgres>>
-      steps:
-        - run:
-            name: Start Postgres and apply migrations
-            environment:
-              POSTGRES_DB: <<parameters.postgres_db>>
-            command: <<include(scripts/start-postgres.sh)>>
-  - ginkgo:
-      package: <<parameters.package>>
-      skip: <<parameters.skip>>
-  - store_test_results:
-      path: test-results
+  - run:
+      name: Run component tests
+      environment:
+        POSTGRES: <<parameters.postgres>>
+        POSTGRES_DB: <<parameters.postgres_db>>
+        RABBIT: <<parameters.rabbit>>
+      command: <<include(scripts/go-component.sh)>>
