@@ -1,7 +1,3 @@
-# Source: https://github.com/CircleCI-Public/Orb-Project-Template/blob/master/src/tests/greet.bats
-
-# Runs prior to every test
-
 setup() {
     source ./src/scripts/ginkgo.sh
     # Stub out ginkgo

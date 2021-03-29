@@ -7,6 +7,7 @@ SKIP="${SKIP:-}"
 POSTGRES="${POSTGRES:-}"
 POSTGRES_DB="${POSTGRES_DB:-component}"
 RABBIT="${RABBIT:-}"
+GINKGO="${GINKGO:-ginkgo}"
 
 export POSTGRES_PORT=5432 POSTGRES_USER=component POSTGRES_PASSWORD=component
 export RABBIT_URL='amqp://guest:guest@localhost:5672'
@@ -18,7 +19,7 @@ err() {
 }
 
 run_ginkgo() {
-    ginkgo -r --randomizeAllSpecs --randomizeSuites "$@"
+    eval "${GINKGO}" -r --randomizeAllSpecs --randomizeSuites "$@"
 }
 
 start_rabbit() {
@@ -42,7 +43,8 @@ start_postgres() {
 
 run_component_tests() {
     set +o pipefail
-    if (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
+
+    if ! (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
         echo "Nothing to test"
         exit 0
     fi
