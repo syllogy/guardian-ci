@@ -42,7 +42,7 @@ start_postgres() {
     }
 
 set +o pipefail
-if (git diff --name-only HEAD~1 | grep -cvE "${PAT}" >/dev/null); then
+if (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
     echo "Nothing to test"
     exit 0
 fi
