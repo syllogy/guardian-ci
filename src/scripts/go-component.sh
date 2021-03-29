@@ -13,12 +13,12 @@ export RABBIT_URL='amqp://guest:guest@localhost:5672'
 export RABBIT_MGMT_URL='http://guest:guest@localhost:15672'
 
 err() {
-    echo $* >&2
+    echo "$@" >&2
     exit 1
 }
 
 run_ginkgo() {
-    ginkgo -r --randomizeAllSpecs --randomizeSuites $*
+    ginkgo -r --randomizeAllSpecs --randomizeSuites "$@"
 }
 
 start_rabbit() {
@@ -42,7 +42,7 @@ start_postgres() {
     }
 
 set +o pipefail
-if (git diff --name-only HEAD~1 | grep -cvE "$PAT" >/dev/null); then
+if (git diff --name-only HEAD~1 | grep -cvE "${PAT}" >/dev/null); then
     echo "Nothing to test"
     exit 0
 fi
@@ -57,5 +57,5 @@ if [ -n "${POSTGRES}" ]; then
     start_postgres
 fi
 
-test -z "${SKIP}" && run_ginkgo $PACKAGE
-test ! -z "${SKIP}" && run_ginkgo --skipPackage $SKIP $PACKAGE
+test -z "${SKIP}" && run_ginkgo "${PACKAGE}"
+test ! -z "${SKIP}" && run_ginkgo --skipPackage "${SKIP}" "${PACKAGE}"
