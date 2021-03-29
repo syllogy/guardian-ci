@@ -51,6 +51,7 @@ workflows:
             - orb-tools/lint
             - orb-tools/pack
             - shellcheck/check
+            - bats/run
       # Publish development version(s) of the orb.
       - orb-tools/publish-dev:
           orb-name: bishopfox/guardian
