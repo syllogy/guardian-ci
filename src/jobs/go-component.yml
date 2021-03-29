@@ -44,6 +44,12 @@ steps:
       version: <<parameters.go_version>>
   - golang/gomod-download
   - run:
+      name: ensure ginkgo is present
+      command: |
+        if ! command -v ginkgo &> /dev/null; then
+          go get github.com/onsi/ginkgo/ginkgo
+        fi
+  - run:
       name: Set up docker
       command: |
         echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin

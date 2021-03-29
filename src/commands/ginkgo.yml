@@ -18,11 +18,9 @@ steps:
         if ! command -v ginkgo &> /dev/null; then
           go get github.com/onsi/ginkgo/ginkgo
         fi
-  - when:
-      condition: <<parameters.skip>>
-      steps:
-        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --skipPackage <<parameters.skip>>
-  - unless:
-      condition: <<parameters.skip>>
-      steps:
-        - run: ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending <<parameters.package>>
+  - run:
+      name: Unit test
+      environment:
+        SKIP: <<parameters.skip>>
+        PACKAGE: <<parameters.package>>
+      command: <<include(scripts/ginkgo.sh)>>
