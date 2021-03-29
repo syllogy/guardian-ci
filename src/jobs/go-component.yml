@@ -37,9 +37,6 @@ steps:
   - checkout
   - attach_workspace:
       at: ~/repo
-  - run:
-      name: Check if testing is necessary
-      command: <<include(scripts/maybe-skip-testing.sh)>>
   - golang/install:
       version: <<parameters.go_version>>
   - golang/gomod-download
