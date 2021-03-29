@@ -2,20 +2,30 @@
 set -euo pipefail
 
 PAT='*\.(md|tf|js|py|svg|png)$|VERSION|.circleci/config.yml'
-
-run_ginkgo() {
-    ginkgo -r --randomizeAllSpecs --randomizeSuites "$@"
-}
-
 PACKAGE="${PACKAGE:-}"
 SKIP="${SKIP:-}"
+GINKGO="${GINKGO:-ginkgo}"
 
-set +o pipefail
-if (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
-    echo "Nothing to test"
-    exit 0
+run_ginkgo() {
+    eval "${GINKGO}" -r --randomizeAllSpecs --randomizeSuites "$@"
+}
+
+run_unit_tests () {
+    set +o pipefail
+    if ! (git diff --name-only HEAD~1 | grep -vE "${PAT}"); then
+        echo "Nothing to test"
+        exit 0
+    fi
+    set -o pipefail
+
+    if [ -z "${SKIP}" ]; then
+        run_ginkgo "${PACKAGE}"
+    else
+        run_ginkgo --skipPackage "${SKIP}" "${PACKAGE}"
+    fi
+}
+
+TEST_ENV="bats-core"
+if [ "${0#*$TEST_ENV}" == "$0" ]; then
+    run_unit_tests
 fi
-set -o pipefail
-
-test -z "${SKIP}" && run_ginkgo "${PACKAGE}"
-test ! -z "${SKIP}" && run_ginkgo --skipPackage "${SKIP}" "${PACKAGE}"

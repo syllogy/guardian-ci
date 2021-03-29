@@ -38,24 +38,34 @@ start_postgres() {
     done
 
     docker-compose run migrate
+}
 
-    }
+run_component_tests() {
+    set +o pipefail
+    if (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
+        echo "Nothing to test"
+        exit 0
+    fi
+    set -o pipefail
 
-set +o pipefail
-if (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
-    echo "Nothing to test"
-    exit 0
+    if [ -n "${RABBIT}" ]; then
+        start_rabbit
+    fi
+
+
+    if [ -n "${POSTGRES}" ]; then
+        start_postgres
+    fi
+
+
+    if [ -z "${SKIP}" ]; then
+        run_ginkgo "${PACKAGE}"
+    else
+        run_ginkgo --skipPackage "${SKIP}" "${PACKAGE}"
+    fi
+}
+
+TEST_ENV="bats-core"
+if [ "${0#*$TEST_ENV}" == "$0" ]; then
+    run_component_tests
 fi
-set -o pipefail
-
-if [ -n "${RABBIT}" ]; then
-    start_rabbit
-fi
-
-
-if [ -n "${POSTGRES}" ]; then
-    start_postgres
-fi
-
-test -z "${SKIP}" && run_ginkgo "${PACKAGE}"
-test ! -z "${SKIP}" && run_ginkgo --skipPackage "${SKIP}" "${PACKAGE}"
