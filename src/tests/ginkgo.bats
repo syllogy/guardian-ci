@@ -49,3 +49,12 @@ teardown()  {
 
     [ -z "$(grep 'Running Suite' test.log)" ]
 }
+
+@test 'Unit tests are /not/ run when go.mod or go.sum is altered but not committed' {
+    # This happens when goimports is run in ci
+    echo 'const One = 1' >> ~/test_repo/go.mod
+    echo 'const One = 1' >> ~/test_repo/go.sum
+    (cd ~/test_repo && run_unit_tests) > test.log
+
+    [ -z "$(grep 'Running Suite' test.log)" ]
+}
