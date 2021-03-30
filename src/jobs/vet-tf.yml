@@ -23,6 +23,7 @@ steps:
 
   - git-clone:
       repo: "git@github.com:BishopFox/terraform-modules"
+      path: "~/terraform-modules"
 
   - run:
       name: vet terraform

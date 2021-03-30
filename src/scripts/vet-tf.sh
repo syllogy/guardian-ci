@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TERRAFORM="${TERRAFORM:-terraform}"
-TF_MODULE_DIR="${TF_MODULE_DIR:-~/terraform-modules}"
+TF_MODULE_DIR="${TF_MODULE_DIR:-$HOME/terraform-modules}"
 MODULE_PAT='source\s+=\s+.*bishopfox.*v[0-9\.]*'
 
 find_modules () {
