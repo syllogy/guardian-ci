@@ -12,7 +12,7 @@ run_ginkgo() {
 
 run_unit_tests () {
     set +o pipefail
-    if ! (git diff --name-only HEAD~1 | grep -vE "${PAT}" >/dev/null); then
+    if ! (git diff --name-only HEAD~1 | grep -vE "${PAT}"); then
         echo "Nothing to test"
         exit 0
     fi
