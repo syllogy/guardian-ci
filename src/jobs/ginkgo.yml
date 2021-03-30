@@ -29,6 +29,12 @@ steps:
       steps:
         - goimports
   - run:
+      name: ensure ginkgo is present
+      command: |
+        if ! command -v ginkgo &> /dev/null; then
+          go get github.com/onsi/ginkgo/ginkgo
+        fi
+  - run:
       name: Unit test
       environment:
         SKIP: <<parameters.skip>>
