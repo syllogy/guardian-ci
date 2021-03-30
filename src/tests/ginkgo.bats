@@ -16,15 +16,35 @@ teardown()  {
     rm -f test.log
 }
 
-@test '1: Ginkgo runs tests when go or sql files change' {
+@test 'Unit tests are run when go files change' {
     echo 'const One = 1' >> ~/test_repo/main.go
-    (cd ~/test_repo && git add . && git commit -m "added const") > /dev/null
+    (cd ~/test_repo && git add . && git commit -m "changed go") > /dev/null
     (cd ~/test_repo && run_unit_tests) | grep 'Running Suite'
 }
 
-@test '2: Ginkgo is not run when only tf has changed' {
+@test 'Unit tests are run when sql files change' {
+    echo 'const One = 1' >> ~/test_repo/main.sql
+    (cd ~/test_repo && git add . && git commit -m "changed sql") > /dev/null
+    (cd ~/test_repo && run_unit_tests) | grep 'Running Suite'
+}
+
+@test 'Unit tests are run when go.mod changes' {
+    echo 'const One = 1' >> ~/test_repo/go.mod
+    (cd ~/test_repo && git add . && git commit -m "changed go.mod") > /dev/null
+    (cd ~/test_repo && run_unit_tests) | grep 'Running Suite'
+}
+
+@test 'Unit tests are /not/ run when only terraform is changed' {
     echo 'const One = 1' >> ~/test_repo/example.tf
     (cd ~/test_repo && git add . && git commit -m "only changed tf") >/dev/null
+    (cd ~/test_repo && run_unit_tests) > test.log
+
+    [ -z "$(grep 'Running Suite' test.log)" ]
+}
+
+@test 'Unit tests are /not/ run when only markdown is changed' {
+    echo 'const One = 1' >> ~/test_repo/example.md
+    (cd ~/test_repo && git add . && git commit -m "only changed md") >/dev/null
     (cd ~/test_repo && run_unit_tests) > test.log
 
     [ -z "$(grep 'Running Suite' test.log)" ]
