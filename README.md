@@ -1,4 +1,4 @@
-# guardian Orb
+# Guardian Orb
 
 ## Resources
 
