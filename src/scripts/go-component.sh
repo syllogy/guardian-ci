@@ -9,9 +9,10 @@ POSTGRES_DB="${POSTGRES_DB:-component}"
 RABBIT="${RABBIT:-}"
 GINKGO="${GINKGO:-ginkgo}"
 
-export POSTGRES_PORT=5432 POSTGRES_USER=component POSTGRES_PASSWORD=component
 export RABBIT_URL='amqp://guest:guest@localhost:5672'
 export RABBIT_MGMT_URL='http://guest:guest@localhost:15672'
+export POSTGRES_PORT=5432 POSTGRES_USER=component POSTGRES_PASSWORD=component
+export POSTGRES_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$POSTGRES_PORT/$POSTGRES_DB?sslmode=disable"
 
 err() {
     echo "$@" >&2
@@ -29,6 +30,8 @@ start_rabbit() {
     until docker-compose exec rabbit rabbitmqctl await_startup --timeout 60; do
         sleep 1
     done
+    # make sure we've started
+    docker-compose exec rabbit rabbitmqctl await_startup --timeout 5
 }
 
 start_postgres() {
