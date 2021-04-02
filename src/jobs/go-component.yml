@@ -54,6 +54,7 @@ steps:
       name: Run component tests
       environment:
         POSTGRES: <<parameters.postgres>>
+        PACKAGE: <<parameters.package>>
         POSTGRES_DB: <<parameters.postgres_db>>
         RABBIT: <<parameters.rabbit>>
       command: <<include(scripts/go-component.sh)>>
