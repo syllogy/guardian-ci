@@ -22,6 +22,8 @@ executor: aws-cli/default
 steps:
   - checkout:
       path: ~/repo
+  - attach_workspace:
+      at: ~/repo
   - terraform/install:
       terraform_version: <<parameters.tf_version>>
   - aws-cli/install
