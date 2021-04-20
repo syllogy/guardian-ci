@@ -57,12 +57,12 @@ run_component_tests() {
     fi
     set -o pipefail
 
-    if [ "${RABBIT}" = "true" ]; then
+    if [ -n "${RABBIT}" ]; then
         start_rabbit
     fi
 
 
-    if [ "${POSTGRES}" = "true" ]; then
+    if [ -n "${POSTGRES}" ]; then
         start_postgres
     fi
 
