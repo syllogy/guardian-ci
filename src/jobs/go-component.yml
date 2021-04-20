@@ -24,6 +24,10 @@ parameters:
     type: boolean
     description: "start postgres docker container (requires a docker-compose.yml with postgres configuration)"
     default: false
+  debug:
+    type: boolean
+    description: "whether or not to provide debug outputs"
+    default: false
   postgres_db:
     type: string
     description: "the name of the database to be used for component tests"
@@ -53,8 +57,10 @@ steps:
   - run:
       name: Run component tests
       environment:
-        POSTGRES: <<parameters.postgres>>
+        POSTGRES: <<#parameters.postgres>>true<</parameters.postgres>>
         PACKAGE: <<parameters.package>>
         POSTGRES_DB: <<parameters.postgres_db>>
-        RABBIT: <<parameters.rabbit>>
+        RABBIT: <<#parameters.rabbit>>true<</parameters.rabbit>>
+        DEBUG: <<#parameters.debug>>true<</parameters.debug>>
+        SKIP: <<parameters.skip>>
       command: <<include(scripts/go-component.sh)>>
