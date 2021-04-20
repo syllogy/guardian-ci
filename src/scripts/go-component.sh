@@ -4,9 +4,9 @@ set -euo pipefail
 PAT='*\.(md|tf|js|py|svg|png)$|VERSION|.circleci/config.yml'
 PACKAGE="${PACKAGE:-}"
 SKIP="${SKIP:-}"
-POSTGRES="${POSTGRES:-}"
+POSTGRES="${POSTGRES:-false}"
 POSTGRES_DB="${POSTGRES_DB:-component}"
-RABBIT="${RABBIT:-}"
+RABBIT="${RABBIT:-false}"
 GINKGO="${GINKGO:-ginkgo}"
 
 export RABBIT_URL='amqp://guest:guest@localhost:5672'
@@ -53,12 +53,12 @@ run_component_tests() {
     fi
     set -o pipefail
 
-    if [ -n "${RABBIT}" ]; then
+    if [ "${RABBIT}" = "true" ]; then
         start_rabbit
     fi
 
 
-    if [ -n "${POSTGRES}" ]; then
+    if [ "${POSTGRES}" = "true" ]; then
         start_postgres
     fi
 
