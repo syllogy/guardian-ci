@@ -4,6 +4,7 @@ set -euo pipefail
 PAT='*\.(md|tf|js|py|svg|png)$|VERSION|.circleci/config.yml'
 PACKAGE="${PACKAGE:-}"
 SKIP="${SKIP:-}"
+DEBUG="${DEBUG:-}"
 POSTGRES="${POSTGRES:-}"
 POSTGRES_DB="${POSTGRES_DB:-component}"
 RABBIT="${RABBIT:-}"
@@ -14,9 +15,10 @@ export RABBIT_MGMT_URL='http://guest:guest@localhost:15672'
 export POSTGRES_PORT=5432 POSTGRES_USER=component POSTGRES_PASSWORD=component
 export POSTGRES_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$POSTGRES_PORT/$POSTGRES_DB?sslmode=disable"
 
-err() {
-    echo "$@" >&2
-    exit 1
+debug() {
+    if [[ -n "$DEBUG" ]]; then
+        printf "[DEBUG] %s\n" "$*" 1>&2
+    fi
 }
 
 run_ginkgo() {
@@ -24,6 +26,7 @@ run_ginkgo() {
 }
 
 start_rabbit() {
+    debug "starting rabbit"
     # Starts rabbit and applies migrations
     RABBIT_PORT=5672 RABBIT_MGMT_PORT=15672 docker-compose up -d rabbit
 
@@ -35,6 +38,7 @@ start_rabbit() {
 }
 
 start_postgres() {
+    debug "starting postgres database ${POSTGRES_DB}"
     docker-compose up -d postgres
 
     until docker-compose exec postgres pg_isready; do
@@ -72,5 +76,12 @@ run_component_tests() {
 
 TEST_ENV="bats-core"
 if [ "${0#*$TEST_ENV}" == "$0" ]; then
+    # Show inputs
+    debug "RABBIT=${RABBIT}"
+    debug "POSTGRES=${POSTGRES}"
+    debug "SKIP=${SKIP}"
+    debug "PACKAGE=${PACKAGE}"
+    debug "GINKGO=${GINKGO}"
+
     run_component_tests
 fi
