@@ -25,4 +25,8 @@ aws ssm get-parameter --name "/cast/${ENV_NAME}/vars/${SERVICE}" --query 'Parame
 
 test ! -z "${SHOULD_VALIDATE:-}" && terraform validate
 
-terraform plan --var "app_version=$VERSION" --var "env=$ENV_NAME" --var "aws_profile=$AWS_PROFILE"
+export TF_VAR_app_version="$VERSION" \
+  TF_VAR_env="$ENV_NAME" \
+  TF_VAR_aws_profile="$AWS_PROFILE"
+
+terraform plan
