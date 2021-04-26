@@ -18,11 +18,15 @@ parameters:
     description: "whether or not to publish docker containers"
     default: true
     type: boolean
+  working_dir:
+    description: "current working directory"
+    type: string
+    default: "~/repo"
 
 steps:
   - checkout
   - attach_workspace:
-      at: ~/repo
+      at: << parameters.working_dir >>
   - run:
       name: Copy Changelog
       command: |
