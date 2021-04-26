@@ -19,7 +19,7 @@ parameters:
     default: true
     type: boolean
   working_dir:
-    description: "current working directory"
+    description: "current working directory from which to publish from"
     type: string
     default: "~/repo"
 
