@@ -2,8 +2,8 @@
 set -euo pipefail
 
 pr_number=$(echo "$CIRCLE_PULL_REQUEST" | cut -d / -f 7)
-draft_pr_status_url="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$pr_number?access_token=$GITHUB_TOKEN"
-pr_status_result=$(curl --silent -H "Accept: application/vnd.github.shadow-cat-preview+json" "$draft_pr_status_url")
+draft_pr_status_url="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$pr_number"
+pr_status_result=$(curl --silent -H "Accept: application/vnd.github.shadow-cat-preview+json" -H "Authorization: token $GITHUB_TOKEN" "$draft_pr_status_url")
 not_draft_pr=$(echo "$pr_status_result" | jq '.draft == false')
 
 
