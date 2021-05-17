@@ -3,7 +3,7 @@ description: >
   An example docker-compose file is in jobs/README.md
 
 machine:
-  image: ubuntu-2004:202010-01
+  image: ubuntu-2004:202104-01
 
 working_directory: ~/repo
 
