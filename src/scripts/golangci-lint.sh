@@ -10,6 +10,17 @@ if [[ ! -f .golangci.yml ]]; then
 linters:
   enable:
     - gci
+    - gosimple
+    - deadcode
+    - gocritic
+    - staticcheck
+    - misspell
+    - unconvert
+    - stylecheck
+    - structcheck
+    - bodyclose
+    - rowserrcheck
+    - revive
 linters-settings:
   gci:
     local-prefixes: github.com/BishopFox
