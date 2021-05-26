@@ -18,12 +18,20 @@ parameters:
     type: boolean
     description: "run goimports validation"
     default: true
+  golangci_lint:
+    type: boolean
+    description: "run golangci-lint validation"
+    default: false
 
 steps:
   - checkout
   - attach_workspace:
       at: ~/repo
   - golang/gomod-download
+  - when:
+      condition: <<parameters.golangci_lint>>
+      steps:
+        - golangci-lint
   - when:
       condition: <<parameters.goimports>>
       steps:

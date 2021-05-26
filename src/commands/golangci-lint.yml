@@ -1,0 +1,14 @@
+description: >
+  Lint this golang repo
+
+steps:
+  - run:
+      name: ensure golangci-lint is present
+      command: |
+        if ! command -v golangci-lint &> /dev/null; then
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $HOME/bin v1.40.1
+          golangci-lint --version
+        fi
+  - run:
+      name: golangci-lint
+      command: <<include(scripts/golangci-lint.sh)>>
