@@ -12,6 +12,6 @@ steps:
       name: validate goimports
       command: |
         if [[ "$(goimports -local 'github.com/BishopFox' -l . | tee /dev/stderr)" ]];  then
-          echo "Fix formatting issues with `goimports -local 'github.com/BishopFox' -w .`"
+          echo 'Fix formatting issues with `goimports -local "github.com/BishopFox" -w .`'
           exit 1
         fi
