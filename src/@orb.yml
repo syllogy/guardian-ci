@@ -7,6 +7,6 @@ display:
   source_url: "https://www.github.com/BishopFox/guardian-ci"
 
 orbs:
-  golang: cci-orb/golang@0.1.15
+  golang: cci-orb/golang@0.1
   aws-cli: circleci/aws-cli@1.4.0
   terraform: circleci/terraform@1.2.0
