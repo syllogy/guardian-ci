@@ -50,8 +50,10 @@ steps:
   - run:
       name: Install release dependencies
       command: |
+        pushd "$HOME" > /dev/null
         go get github.com/mitchellh/gox
         go get github.com/tcnksm/ghr
+        popd > /dev/null
   - when:
       condition: <<parameters.candidate>>
       steps:

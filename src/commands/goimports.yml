@@ -6,7 +6,9 @@ steps:
       name: ensure goimports is present
       command: |
         if ! command -v goimports &> /dev/null; then
+          pushd "$HOME" > /dev/null
           go get -u golang.org/x/tools/cmd/goimports
+          popd > /dev/null
         fi
   - run:
       name: validate goimports

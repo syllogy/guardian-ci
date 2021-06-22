@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PAT='*\.(md|tf|js|py|svg|png)$|VERSION|.circleci/config.yml'
+PAT='*\.(md|tf|js|py|svg|png)$|VERSION'
 PACKAGE="${PACKAGE:-}"
 SKIP="${SKIP:-}"
 GINKGO="${GINKGO:-ginkgo}"
 
 run_ginkgo() {
-    eval "${GINKGO}" -r --randomizeAllSpecs --randomizeSuites "$@"
+    echo "${GINKGO} -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --progress " "$@"
+    eval "${GINKGO}" -r --randomizeAllSpecs --randomizeSuites --failOnPending --cover --trace --race --progress "$@"
 }
 
 run_unit_tests () {
     set +o pipefail
-    if ! (git diff --name-only HEAD HEAD~1 | grep -vE "${PAT}"); then
+    if ! (git diff --name-only HEAD HEAD~1 | grep -vE "${PAT}" > /dev/null ); then
         echo "Nothing to test"
         exit 0
     fi

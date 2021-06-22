@@ -16,7 +16,9 @@ steps:
       name: ensure ginkgo is present
       command: |
         if ! command -v ginkgo &> /dev/null; then
+          pushd "$HOME" > /dev/null
           go get github.com/onsi/ginkgo/ginkgo
+          popd > /dev/null
         fi
   - run:
       name: Unit test
