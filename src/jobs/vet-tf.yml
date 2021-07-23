@@ -19,7 +19,7 @@ steps:
       name: Install dependencies
       shell: /bin/sh -eo pipefail
       command: |
-        apk add curl bash
+        apk add curl bash grep
 
   - git-clone:
       repo: "git@github.com:BishopFox/terraform-modules"
