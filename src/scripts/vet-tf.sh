@@ -20,7 +20,7 @@ vet_terraform () {
     exit 0
   fi
 
-  tf_versions=$(find_modules | grep -oE 'v[0-9\.]+')
+  tf_versions=$(find_modules | grep -oP '(?<=ref=)v[0-9\.]+')
 
   if [[ -n $tf_versions ]]; then
   echo "$tf_versions" | while read -r version; do
