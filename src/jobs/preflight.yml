@@ -7,7 +7,7 @@ steps:
   - checkout
   - run:
       name: Ensure version number is changed
-      command: if git diff --exit-code origin/master VERSION; then echo "VERSION - matches origin/master, needs bumped" 1>&2; false; fi
+      command: if git diff --exit-code origin/main VERSION; then echo "VERSION - matches origin/main, needs bumped" 1>&2; false; fi
   - run:
       name: Ensure changelog matches the version number
       command: awk -v "version=$(cat VERSION)" 'NR == 1 && $0 !~ version {print "CHANGELOG.md - version does not match VERSION" | "cat 1>&2"; err=1} END {exit err}' CHANGELOG.md
