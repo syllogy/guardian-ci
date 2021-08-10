@@ -1,0 +1,34 @@
+description: >
+  Build a go application
+
+parameters:
+  path:
+    type: string
+    description: "The path to main.go"
+    default: "./main.go"
+  service_name:
+    type: string
+    description: "The name of the binary"
+  build_package:
+    type: string
+    description: "Fully qualified go mod path to build package"
+    default: pkg/build
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: ~/repo
+  - golang/gomod-download
+  - run:
+      name: go build
+      command: |
+        MODULE=$(cat go.mod | grep module | awk '{print $2}')
+        BUILD_PACKAGE_PATH="$MODULE/<<parameters.build_package>>"
+        VERSION=$(cat VERSION)
+        COMMIT_SHA=$(git rev-parse HEAD)
+        BUILD_DATE=$(date +%Y-%m-%d\ %H:%M)
+
+        CGO_ENABLED=0 GOOS=linux go build \
+          -ldflags "-X '$BUILD_PACKAGE_PATH.Version=$VERSION' -X '$BUILD_PACKAGE_PATH.Sha=$COMMIT_SHA' -X '$BUILD_PACKAGE_PATH.Date=$BUILD_DATE'" \
+          -a -installsuffix cgo \
+          -o dist/<<parameters.service_name>> <<parameters.path>>

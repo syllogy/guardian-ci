@@ -1,6 +1,7 @@
 description: >
-  Run ginkgo component tests and optional start rabbit or postgres from a docker-compose.yml
-  An example docker-compose file is in jobs/README.md
+  Run dredd tests and optionally start rabbit or postgres from a docker-compose.yml
+  An example docker-compose file is in jobs/README.md.
+  Requires a dredd.yml and for the app to already be built and in the directory dredd expects.
 
 machine:
   image: ubuntu-2004:202104-01
@@ -8,14 +9,6 @@ machine:
 working_directory: ~/repo
 
 parameters:
-  package:
-    type: string
-    description: "The package to run ginkgo against"
-    default: "component"
-  skip:
-    type: string
-    description: "a comma separated list of packages to skip"
-    default: ""
   rabbit:
     type: boolean
     description: "start rabbitmq docker container (requires a docker-compose.yml with rabbit configuration)"
@@ -32,6 +25,9 @@ parameters:
     type: string
     description: "the name of the database to be used for component tests"
     default: component
+  hooks_path:
+    type: string
+    description: "the path to hooks/main.go"
   go_version:
     type: string
     description: "the version of golang to install"
@@ -44,23 +40,25 @@ steps:
   - golang/install:
       version: <<parameters.go_version>>
   - golang/gomod-download
-  - run:
-      name: ensure ginkgo is present
-      command: |
-        if ! command -v ginkgo &> /dev/null; then
-          pushd "$HOME" > /dev/null
-          go get github.com/onsi/ginkgo/ginkgo
-          popd > /dev/null
-        fi
   - docker-compose:
       rabbit: <<parameters.rabbit>>
       postgres: <<parameters.postgres>>
       debug: <<parameters.debug>>
       postgres_db: <<parameters.postgres_db>>
   - run:
-      name: Run component tests
-      environment:
-        PACKAGE: <<parameters.package>>
-        DEBUG: <<#parameters.debug>>true<</parameters.debug>>
-        SKIP: <<parameters.skip>>
-      command: <<include(scripts/go-component.sh)>>
+      name: Setup Dredd
+      command: |
+        # dredd does not understand a gopath with multiple paths
+        echo "export GOPATH=$HOME/.go_workspace" >> $BASH_ENV
+
+        go get github.com/snikch/goodman/cmd/goodman
+        npm install -g dredd
+  - when:
+      condition: <<parameters.hooks_path>>
+      steps:
+        - go-build:
+            service_name: hooks
+            path: <<parameters.hooks_path>>
+  - run:
+      name: Run Dredd tests
+      command: dredd

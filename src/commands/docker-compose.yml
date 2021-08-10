@@ -1,0 +1,34 @@
+description: >
+  Set up docker compose containers
+
+parameters:
+  rabbit:
+    type: boolean
+    description: "start rabbitmq docker container (requires a docker-compose.yml with rabbit configuration)"
+    default: false
+  postgres:
+    type: boolean
+    description: "start postgres docker container (requires a docker-compose.yml with postgres configuration)"
+    default: false
+  debug:
+    type: boolean
+    description: "whether or not to provide debug outputs"
+    default: false
+  postgres_db:
+    type: string
+    description: "the name of the database to be used for component tests"
+    default: component
+
+steps:
+  - run:
+      name: Set up docker
+      command: |
+        echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
+  - run:
+      name: Set up docker compose containers
+      environment:
+        POSTGRES: <<#parameters.postgres>>true<</parameters.postgres>>
+        POSTGRES_DB: <<parameters.postgres_db>>
+        RABBIT: <<#parameters.rabbit>>true<</parameters.rabbit>>
+        DEBUG: <<#parameters.debug>>true<</parameters.debug>>
+      command: <<include(scripts/docker-compose.sh)>>

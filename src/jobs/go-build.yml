@@ -1,0 +1,27 @@
+description: >
+  Build a go application
+
+executor: default
+
+working_directory: ~/repo
+
+parameters:
+  path:
+    type: string
+    description: "The path to main.go"
+    default: "./main.go"
+  service_name:
+    type: string
+    description: "The name of the binary"
+
+steps:
+  - checkout
+  - attach_workspace:
+      at: ~/repo
+  - go-build:
+      path: <<parameters.path>>
+      service_name: <<parameters.service_name>>
+  - persist_to_workspace:
+      root: .
+      paths:
+        - dist
