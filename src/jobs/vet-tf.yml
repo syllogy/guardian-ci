@@ -4,7 +4,7 @@ shell: /bin/bash -eo pipefail
 parameters:
   tf_version:
     description: "the version of terraform to use"
-    default: "0.14.7"
+    default: "0.15.5"
     type: string
 
 docker:
