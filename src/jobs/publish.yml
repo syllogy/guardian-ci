@@ -50,7 +50,7 @@ steps:
             environment:
               CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
               RELEASE_NAME: << parameters.release_name >>
-              WORKING_DIR: << parameters.docker_path >>
+              DOCKER_PATH: << parameters.docker_path >>
             command: <<include(scripts/publish-docker.sh)>>
   - run:
       name: Install release dependencies
