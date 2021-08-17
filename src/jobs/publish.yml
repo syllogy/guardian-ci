@@ -22,6 +22,10 @@ parameters:
     description: "current working directory from which to publish from"
     type: string
     default: "~/repo"
+  docker_path:
+    description: "non-standard path to Dockerfile"
+    type: string
+    default: "."
 
 steps:
   - checkout
@@ -46,6 +50,7 @@ steps:
             environment:
               CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
               RELEASE_NAME: << parameters.release_name >>
+              WORKING_DIR: << parameters.docker_path >>
             command: <<include(scripts/publish-docker.sh)>>
   - run:
       name: Install release dependencies
