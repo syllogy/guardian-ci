@@ -57,12 +57,5 @@ steps:
               DOCKER_PATH: << parameters.docker_path >>
               IMAGE_NAME: << parameters.image_name >>
             command: <<include(scripts/publish-docker.sh)>>
-  - run:
-      name: Install release dependencies
-      command: |
-        pushd "$HOME" > /dev/null
-        go get github.com/mitchellh/gox
-        go get github.com/tcnksm/ghr
-        popd > /dev/null
   - store_artifacts:
       path: ~/repo/dist
