@@ -30,10 +30,6 @@ parameters:
     description: "name for docker image if it differs from release_name"
     type: string
     default: ""
-  publish_release:
-    description: "if a github release should be published on this invocation"
-    type: boolean
-    default: true
 
 steps:
   - checkout
@@ -68,31 +64,5 @@ steps:
         go get github.com/mitchellh/gox
         go get github.com/tcnksm/ghr
         popd > /dev/null
-  - when:
-      condition: <<parameters.candidate>> && <<parameters.publish_release>>
-      steps:
-        - run:
-            name: Create candidate github release
-            command: |
-              VERSION=$(cat VERSION)
-              ghr -t $GITHUB_TOKEN \
-                -u BishopFox \
-                -r << parameters.release_name >> \
-                -c $CIRCLE_SHA1 \
-                --replace "v$VERSION-$CIRCLE_SHA1" \
-                ./dist
-  - unless:
-      condition: <<parameters.candidate>> && <<parameters.publish_release>>
-      steps:
-        - run:
-            name: Create github release
-            command: |
-              VERSION=$(cat VERSION)
-              ghr -t $GITHUB_TOKEN \
-                -u BishopFox \
-                -r << parameters.release_name >> \
-                -c $CIRCLE_SHA1 \
-                --delete "v$VERSION" \
-                ./dist
   - store_artifacts:
       path: ~/repo/dist
