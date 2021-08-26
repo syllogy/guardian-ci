@@ -22,6 +22,14 @@ parameters:
     description: "current working directory from which to publish from"
     type: string
     default: "~/repo"
+  dockerfile_path:
+    description: "non-standard path to Dockerfile"
+    type: string
+    default: "."
+  image_name:
+    description: "name for docker image if it differs from release_name"
+    type: string
+    default: ""
 
 steps:
   - checkout
@@ -46,39 +54,8 @@ steps:
             environment:
               CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
               RELEASE_NAME: << parameters.release_name >>
+              DOCKERFILE_PATH: << parameters.dockerfile_path >>
+              IMAGE_NAME: << parameters.image_name >>
             command: <<include(scripts/publish-docker.sh)>>
-  - run:
-      name: Install release dependencies
-      command: |
-        pushd "$HOME" > /dev/null
-        go get github.com/mitchellh/gox
-        go get github.com/tcnksm/ghr
-        popd > /dev/null
-  - when:
-      condition: <<parameters.candidate>>
-      steps:
-        - run:
-            name: Create candidate github release
-            command: |
-              VERSION=$(cat VERSION)
-              ghr -t $GITHUB_TOKEN \
-                -u BishopFox \
-                -r << parameters.release_name >> \
-                -c $CIRCLE_SHA1 \
-                --replace "v$VERSION-$CIRCLE_SHA1" \
-                ./dist
-  - unless:
-      condition: <<parameters.candidate>>
-      steps:
-        - run:
-            name: Create github release
-            command: |
-              VERSION=$(cat VERSION)
-              ghr -t $GITHUB_TOKEN \
-                -u BishopFox \
-                -r << parameters.release_name >> \
-                -c $CIRCLE_SHA1 \
-                --delete "v$VERSION" \
-                ./dist
   - store_artifacts:
       path: ~/repo/dist

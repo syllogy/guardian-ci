@@ -8,7 +8,11 @@ if [[ -z $VERSION ]]; then
     exit 1
 fi
 
-CONTAINER="bishopfox/$RELEASE_NAME"
+if [[ -z $IMAGE_NAME ]]; then
+    CONTAINER="bishopfox/$RELEASE_NAME"
+else
+    CONTAINER="bishopfox/$IMAGE_NAME"
+fi
 
 VERSIONED_TAG="$VERSION"
 NAMED_TAG="stable"
@@ -18,7 +22,7 @@ if [[ -n $CANDIDATE ]]; then
 fi
 
 build() {
-    docker build --pull --no-cache -t "$CONTAINER" .
+    docker build --pull --no-cache -t "$CONTAINER" "$DOCKERFILE_PATH"
 }
 
 push_version() {
