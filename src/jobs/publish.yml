@@ -22,7 +22,7 @@ parameters:
     description: "current working directory from which to publish from"
     type: string
     default: "~/repo"
-  docker_path:
+  dockerfile_path:
     description: "non-standard path to Dockerfile"
     type: string
     default: "."
@@ -54,7 +54,7 @@ steps:
             environment:
               CANDIDATE: <<# parameters.candidate >>1<</ parameters.candidate >>
               RELEASE_NAME: << parameters.release_name >>
-              DOCKER_PATH: << parameters.docker_path >>
+              DOCKERFILE_PATH: << parameters.dockerfile_path >>
               IMAGE_NAME: << parameters.image_name >>
             command: <<include(scripts/publish-docker.sh)>>
   - store_artifacts:

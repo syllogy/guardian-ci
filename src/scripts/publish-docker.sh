@@ -22,7 +22,7 @@ if [[ -n $CANDIDATE ]]; then
 fi
 
 build() {
-    docker build --pull --no-cache -t "$CONTAINER" "$DOCKER_PATH"
+    docker build --pull --no-cache -t "$CONTAINER" "$DOCKERFILE_PATH"
 }
 
 push_version() {
