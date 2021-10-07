@@ -23,7 +23,7 @@ parameters:
     default: false
     type: boolean
   platforms:
-    descriptions: "platforms to publish with buildx"
+    description: "platforms to publish with buildx"
     default: "linux/arm64"
     type: string
   working_dir:
