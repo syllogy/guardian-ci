@@ -26,6 +26,7 @@ build() {
 }
 
 buildx() {
+    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     docker buildx build \
       --platform "$PLATFORMS" \
       --no-cache \
