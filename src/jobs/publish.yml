@@ -18,6 +18,14 @@ parameters:
     description: "whether or not to publish docker containers"
     default: true
     type: boolean
+  docker_buildx:
+    description: "publish cross-platform builds"
+    default: false
+    type: boolean
+  platforms:
+    description: "platforms to publish with buildx"
+    default: "linux/arm64"
+    type: string
   working_dir:
     description: "current working directory from which to publish from"
     type: string
@@ -56,6 +64,8 @@ steps:
               RELEASE_NAME: << parameters.release_name >>
               DOCKERFILE_PATH: << parameters.dockerfile_path >>
               IMAGE_NAME: << parameters.image_name >>
+              DOCKER_BUILDX: <<# parameters.docker_buildx >>1<</ parameters.docker_buildx >>
+              PLATFORMS: << parameters.platforms >>
             command: <<include(scripts/publish-docker.sh)>>
   - store_artifacts:
       path: ~/repo/dist
