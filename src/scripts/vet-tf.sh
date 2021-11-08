@@ -13,7 +13,7 @@ find_modules () {
 vet_terraform () {
   eval "${TERRAFORM}" fmt --check . || (echo "Terraform is not formatted correctly. Please run 'terraform fmt'" && exit 1)
 
-  latest_module_version="v$(cat "${TF_MODULE_DIR}"/VERSION)"
+  #latest_module_version="v$(cat "${TF_MODULE_DIR}"/VERSION)"
 
   if ! (find_modules >/dev/null); then
     echo "no modules found"
