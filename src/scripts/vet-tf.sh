@@ -20,17 +20,17 @@ vet_terraform () {
     exit 0
   fi
 
-  tf_versions=$(find_modules | grep -oP '(?<=ref=)v[0-9\.]+')
+  #tf_versions=$(find_modules | grep -oP '(?<=ref=)v[0-9\.]+')
 
-  if [[ -n $tf_versions ]]; then
-  echo "$tf_versions" | while read -r version; do
-    if [[ "$latest_module_version" != "$version" ]]; then
-    echo "terraform modules can be upgraded from $version to $latest_module_version"
-    echo "if it cannot be upgraded, remove this job from the pipeline and re-add it when modules can be upgraded"
-    exit 1
-    fi
-  done
-  fi
+  #if [[ -n $tf_versions ]]; then
+  #echo "$tf_versions" | while read -r version; do
+  #  if [[ "$latest_module_version" != "$version" ]]; then
+  #  echo "terraform modules can be upgraded from $version to $latest_module_version"
+  #  echo "if it cannot be upgraded, remove this job from the pipeline and re-add it when modules can be upgraded"
+  #  exit 1
+  #  fi
+  #done
+  #fi
 }
 
 TEST_ENV="bats-core"
