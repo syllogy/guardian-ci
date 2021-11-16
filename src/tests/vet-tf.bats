@@ -23,10 +23,10 @@ teardown()  {
   (cd /tmp/tf_repo && vet_terraform)
 }
 
-@test 'vet-tf fails when modules are not up to date' {
-  ! (cd /tmp/tf_repo && vet_terraform > /tmp/testlog)
-   grep 'terraform modules can be upgraded' /tmp/testlog
-}
+#@test 'vet-tf fails when modules are not up to date' {
+#  ! (cd /tmp/tf_repo && vet_terraform > /tmp/testlog)
+#   grep 'terraform modules can be upgraded' /tmp/testlog
+#}
 
 @test 'vet-tf fails when terraform is not formatted' {
   export TERRAFORM="false"
